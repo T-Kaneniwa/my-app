@@ -6,8 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const [content, setContent] = useState('');
 const navigate = useNavigate();
 
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+const handleSubmit = () => {
   const newPost = {
     id: Date.now(),
     content: content,
@@ -30,6 +29,7 @@ const CommentForm = () => {
         variant='outlined'
         fullWidth
         required
+        value={content}
         onChange={(e) => setContent(e.target.value)}
       />
       <Button type='submit' color='success' endIcon={<SendIcon />}>
