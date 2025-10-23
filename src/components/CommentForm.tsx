@@ -6,14 +6,14 @@ import { getCurrentDate } from '../utils/UtilsFuncs';
 import { addComment } from '../db/CommentDb';
 import React from 'react';
 
-//
 /** コメント追加フォーム画面 */
 const CommentForm = () => {
   const [content, setContent] = useState('');
   const navigate = useNavigate();
 
   /** フォーム送信時の処理 */
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const newPost = {
       date: getCurrentDate(),
       content: content,
@@ -33,6 +33,7 @@ const CommentForm = () => {
       component='form'
       onSubmit={handleSubmit}
       sx={{ '& > :not(style)': { m: 1, width: '25ch' } }}
+      bgcolor='white'
     >
       <TextField
         id='content'

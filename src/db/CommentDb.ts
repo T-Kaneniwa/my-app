@@ -1,5 +1,5 @@
-const DB_NAME = 'commentDB';
-const STORE_NAME = 'comments';
+export const DB_NAME = 'commentDB';
+export const STORE_NAME = 'comments' as const;
 let db: IDBDatabase | null = null;
 
 export async function openDatabase(): Promise<IDBDatabase> {
@@ -62,6 +62,25 @@ export async function getComments(): Promise<any[]> {
 
     request.onerror = () => {
       reject('コメントの取得に失敗しました');
+    };
+  });
+}
+
+export async function deleteComment(id: number): Promise<void> {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    // トランザクションとオブジェクトストアの取得
+    const transaction = db.transaction(STORE_NAME, 'readwrite');
+    const store = transaction.objectStore(STORE_NAME);
+
+    const deleteRequest = store.delete(id);
+
+    deleteRequest.onsuccess = () => {
+      resolve(alert('コメントを削除しました。'));
+    };
+
+    deleteRequest.onerror = () => {
+      reject('コメント削除に失敗しました');
     };
   });
 }
