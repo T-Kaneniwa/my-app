@@ -2,20 +2,32 @@ import SendIcon from '@mui/icons-material/Send';
 import { Box, Button, TextField } from '@mui/material';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { getCurrentDate } from '../utils/UtilsFuncs';
+import { addComment } from '../db/CommentDb';
+import React from 'react';
 
-const [content, setContent] = useState('');
-const navigate = useNavigate();
-
-const handleSubmit = () => {
-  const newPost = {
-    id: Date.now(),
-    content: content,
-  };
-  localStorage.setItem('post', JSON.stringify(newPost));
-  navigate('/');
-};
-
+//
+/** コメント追加フォーム画面 */
 const CommentForm = () => {
+  const [content, setContent] = useState('');
+  const navigate = useNavigate();
+
+  /** フォーム送信時の処理 */
+  const handleSubmit = async () => {
+    const newPost = {
+      date: getCurrentDate(),
+      content: content,
+    };
+    try {
+      await addComment(newPost);
+      console.log('IndexedDBに保存しました', newPost);
+      navigate('/');
+    } catch (e) {
+      console.error('IndexedDB error', e);
+      // localStorage.setItem('comment', JSON.stringify(newPost));
+    }
+  };
+
   return (
     <Box
       component='form'

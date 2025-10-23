@@ -1,3 +1,4 @@
+import React from 'react';
 import './App.css';
 import CommentForm from './components/CommentForm';
 import CommentList from './components/CommentList';
