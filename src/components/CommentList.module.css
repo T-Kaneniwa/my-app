@@ -1,0 +1,43 @@
+.header {
+  font-size: 36px;
+  color: #000000;
+  margin-bottom: 20px;
+}
+
+.commentList {
+  background-color: #dddddd;
+  height: 100vh;
+  width: 1300px;
+}
+
+/** 各コメント要素 */
+.commentItem {
+  border: 3px solid black; /* 枠線（グレー） */
+  padding: 12px; /* 枠線と中身との余白 */
+  list-style-type: none; /* リストの・（中黒）を非表示にする */
+  border-radius: 8px; /* 角を少し丸くする */
+  width: 600px;
+  margin: 12px auto;
+}
+
+.deleteButton {
+  background-color: #ff6347;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* 新規投稿ボタン */
+.newPostLink {
+  border: 1px solid;
+  border-radius: 8px; /* 角を少し丸くする */
+  font-size: 25px;
+  color: #3333ff;
+  text-decoration: none;
+}

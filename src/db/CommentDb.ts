@@ -1,5 +1,8 @@
-const DB_NAME = 'commentDB';
-const STORE_NAME = 'comments';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+
+export const DB_NAME = 'commentDB';
+export const STORE_NAME_COMMENTS = 'comments' as const;
 let db: IDBDatabase | null = null;
 
 export async function openDatabase(): Promise<IDBDatabase> {
@@ -10,19 +13,20 @@ export async function openDatabase(): Promise<IDBDatabase> {
     }
     const request = window.indexedDB.open(DB_NAME, 1);
 
-    request.onerror = (event) => {
+    request.onerror = () => {
       reject('データベースを開けませんでした');
     };
 
-    request.onsuccess = (event) => {
-      db = event.target.result;
+    request.onsuccess = () => {
+      db = request.result;
       resolve(db);
     };
 
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, {
+    /** commentsテーブルが存在しなかったら新規作成 */
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE_NAME_COMMENTS)) {
+        db.createObjectStore(STORE_NAME_COMMENTS, {
           keyPath: 'id',
           autoIncrement: true,
         });
@@ -34,8 +38,8 @@ export async function openDatabase(): Promise<IDBDatabase> {
 export async function addComment(comment: any): Promise<void> {
   const database = await openDatabase();
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
+    const transaction = database.transaction(STORE_NAME_COMMENTS, 'readwrite');
+    const store = transaction.objectStore(STORE_NAME_COMMENTS);
     const request = store.add(comment);
 
     request.onsuccess = () => {
@@ -52,12 +56,12 @@ export async function getComments(): Promise<any[]> {
   const database = await openDatabase();
 
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
+    const transaction = database.transaction(STORE_NAME_COMMENTS, 'readonly');
+    const store = transaction.objectStore(STORE_NAME_COMMENTS);
     const request = store.getAll();
 
-    request.onsuccess = (event) => {
-      resolve(event.target.result);
+    request.onsuccess = () => {
+      resolve(request.result);
     };
 
     request.onerror = () => {
@@ -65,5 +69,34 @@ export async function getComments(): Promise<any[]> {
     };
   });
 }
+
+export async function deleteComment(id: number): Promise<void> {
+  const isConfirmed = confirm('投稿内容を削除しますか?');
+  if (!isConfirmed) {
+    return;
+  }
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    // トランザクションとオブジェクトストアの取得
+    const transaction = db.transaction(STORE_NAME_COMMENTS, 'readwrite');
+    const store = transaction.objectStore(STORE_NAME_COMMENTS);
+
+    const deleteRequest = store.delete(id);
+
+    deleteRequest.onsuccess = () => {
+      resolve(alert('投稿内容を削除しました。'));
+    };
+
+    deleteRequest.onerror = () => {
+      reject('投稿内容の削除に失敗しました');
+    };
+  });
+}
+
+export const handleAccount = () => {
+  createUserWithEmailAndPassword(auth, 'test@test.jp', 'testtest');
+  // auth.createUserWithEmailAndPassword('test@test.jp', 'test');
+  alert('登録しました');
+};
 
 //参考：IndexedDBの基本を学ぶ https://tech.iimon.co.jp/entry/2023/12/15/111146
